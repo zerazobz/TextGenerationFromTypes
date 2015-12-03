@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -12,14 +13,30 @@ namespace TextGeneratorFromTypes
         static void Main(string[] args)
         {
             Console.Title = "Generate Text From Types Searched in DLL";
-            //if(args.Length == 0)
-            //{
-            //    return;
-            //}
+            if (args.Length == 0)
+            {
+                return;
+            }
+            
+            string dllName = args.GetValue(0).ToString();
+            string typeNameToSearched = args.GetValue(1).ToString();
+            string dllPathFolder = String.Empty;
+//#if DEBUG
+//            dllPathFolder = @"C:\Users\Erick\Documents\Neo\Tools\AdoTemplateGenerator\AdoTemplateGenerator\AdoTemplateGenerator\bin\Debug\";
+//#else
+            dllPathFolder = Environment.CurrentDirectory;
+//#endif
 
-            //string dllPathName = args.GetValue(0).ToString();
-            string dllPathName = Console.ReadLine();
-            Console.WriteLine(dllPathName);
+            string dllPathName = String.Empty;
+            Console.WriteLine($"Nombre de la DLL: {dllName}");
+            if (Directory.Exists(dllPathFolder))
+            {
+                dllPathName = Path.GetFullPath(Path.Combine(dllPathFolder, dllName));
+            }
+            else
+                return;
+
+
             AssemblyName assemblyData = AssemblyName.GetAssemblyName(dllPathName);
 
             AppDomain currentAppDomain = AppDomain.CurrentDomain;
@@ -29,7 +46,7 @@ namespace TextGeneratorFromTypes
             };
 
             var assemblyLoaded = Assembly.Load(assemblyData);
-            var typeSearched = assemblyLoaded.GetTypes().Where(t => t.Name.Contains("ReaderColumnModel")).FirstOrDefault();
+            var typeSearched = assemblyLoaded.GetTypes().Where(t => t.Name.IndexOf(typeNameToSearched, StringComparison.OrdinalIgnoreCase) != -1).FirstOrDefault();
             var instanceOfType = Activator.CreateInstance(typeSearched);
 
             var typeProperties = typeSearched.GetProperties();
