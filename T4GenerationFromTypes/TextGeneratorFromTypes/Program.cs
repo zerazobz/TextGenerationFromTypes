@@ -32,6 +32,15 @@ namespace TextGeneratorFromTypes
             var typeSearched = assemblyLoaded.GetTypes().Where(t => t.Name.Contains("ReaderColumnModel")).FirstOrDefault();
             var instanceOfType = Activator.CreateInstance(typeSearched);
 
+            var typeProperties = typeSearched.GetProperties();
+            Console.WriteLine(Environment.NewLine);
+            Console.BackgroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("Explorando Propiedades::");
+            foreach (var iProperty in typeProperties)
+            {
+                Console.WriteLine("\tSe encontro la propiedad: {0,15}\tcon el tipo: {1,-15}", iProperty.Name, iProperty.PropertyType.FullName);
+            }
+
             Console.ReadKey();
         }
     }
